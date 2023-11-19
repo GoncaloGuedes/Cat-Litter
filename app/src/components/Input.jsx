@@ -1,15 +1,39 @@
 import React from 'react';
 import {View, Text, TextInput, StyleSheet} from 'react-native';
 
-function Input({title, textType = 'none', secureTextEntry = false, keyboardType='default'}) {
+function Input({
+  title,
+  value,
+  setValue,
+  error,
+  setError,
+  textType = 'none',
+  secureTextEntry = false,
+  keyboardType = 'default',
+}) {
   return (
     <View>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={styles.title}>
+        {error ? (
+          <Text style={{color: 'red'}}>{error}</Text>
+        ) : (
+          <Text>{title}</Text>
+        )}
+      </Text>
       <TextInput
+        autoCapitalize="none"
+        autoComplete="off"
         style={styles.textInput}
         textContentType={textType}
         secureTextEntry={secureTextEntry}
         keyboardType={keyboardType}
+        value={value}
+        onChangeText={text => {
+          setValue(text);
+          if (error) {
+            setError('');
+          }
+        }}
       />
     </View>
   );
