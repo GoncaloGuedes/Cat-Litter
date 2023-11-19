@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import './src/core/fontawesome';
@@ -8,14 +8,22 @@ import SplashScreen from './src/screens/Splash';
 import SignInScreen from './src/screens/SignIn';
 import HomeScreen from './src/screens/Home';
 
+const LightTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: 'white',
+  },
+};
+
 const Stack = createNativeStackNavigator();
 
 function App() {
   const [initialized, setInitialized] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={LightTheme}>
       <Stack.Navigator>
         {!initialized ? (
           <>
