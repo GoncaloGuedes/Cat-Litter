@@ -11,8 +11,6 @@ import {
 
 import Title from '../components/Title';
 
-// ... (previous imports)
-
 function SplashScreen({navigation}) {
   useLayoutEffect(() => {
     navigation.setOptions({headerShown: false});
@@ -51,8 +49,8 @@ const styles = StyleSheet.create({
   },
   // Define a style for the image
   image: {
-    maxWidth: 200, // Set your desired max width
-    maxHeight: 200, // Set your desired max height
+    width: 200, // Set your desired max width
+    height: 200, // Set your desired max height
     resizeMode: 'contain', // Adjust the resizeMode as needed
   },
 });

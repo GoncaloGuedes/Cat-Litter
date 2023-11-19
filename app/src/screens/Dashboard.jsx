@@ -1,12 +1,12 @@
 import React from 'react';
 import {SafeAreaView, Text} from 'react-native';
 
-function SignInScreen() {
+function DashboardScreen() {
   return (
     <SafeAreaView>
-      <Text>Sign In!</Text>
+      <Text>Dashboard</Text>
     </SafeAreaView>
   );
 }
 
-export default SignInScreen;
+export default DashboardScreen;

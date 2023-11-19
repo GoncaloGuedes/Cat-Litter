@@ -2,6 +2,8 @@ import React, {useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
+import './src/core/fontawesome';
+
 import SplashScreen from './src/screens/Splash';
 import SignInScreen from './src/screens/SignIn';
 import HomeScreen from './src/screens/Home';
@@ -9,8 +11,8 @@ import HomeScreen from './src/screens/Home';
 const Stack = createNativeStackNavigator();
 
 function App() {
-  const [initialized, setInitialized] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [initialized, setInitialized] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   return (
     <NavigationContainer>
