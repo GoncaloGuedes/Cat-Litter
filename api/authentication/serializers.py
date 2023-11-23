@@ -1,4 +1,5 @@
 # authentication/serializers.py
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from .models import UserAccount
 
@@ -50,3 +51,16 @@ class UserAccountListSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserAccount
         fields = ("id", "first_name", "last_name", "profile_image")
+
+
+class TokenObtainSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        refresh = self.get_token(self.user)
+
+        # Add tokens
+        data["user"] = UserAccountSerializer(self.user).data
+        return data
+
+
+
