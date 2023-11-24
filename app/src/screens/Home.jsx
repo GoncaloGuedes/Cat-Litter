@@ -5,6 +5,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import DashboardScreen from './Dashboard';
 import AddEntryScreen from './AddEntry';
 import ProfileScreen from './Profile';
+import {View, Image, StyleSheet} from 'react-native';
 
 const Tab = createBottomTabNavigator();
 
@@ -16,6 +17,16 @@ function HomeScreen({navigation}) {
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
+        // profile image
+        headerRight: () => (
+          <View style={{marginRight: 15}}>
+            <Image
+              source={require('../assets/profile.png')}
+              style={styles.profileImage}
+            />
+          </View>
+        ),
+
         tabBarIcon: ({focused, color, size}) => {
           const icons = {
             Dashboard: 'chart-simple',
@@ -33,5 +44,14 @@ function HomeScreen({navigation}) {
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  profileImage: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: '#e0e0e0',
+  },
+});
 
 export default HomeScreen;
