@@ -5,8 +5,6 @@ from .models import UserAccount
 
 
 class UserAccountSerializer(serializers.ModelSerializer):
-    profile_image_url = serializers.SerializerMethodField()
-
     class Meta:
         model = UserAccount
         fields = (
@@ -15,15 +13,9 @@ class UserAccountSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "profile_image",
-            "profile_image_url",
         )
-        read_only_fields = ("id", "profile_image_url")
-
-    def get_profile_image_url(self, user):
-        request = self.context.get("request")
-        if user.profile_image:
-            return request.build_absolute_uri(user.profile_image.url)
-        return None
+        read_only_fields = ["id"]
+        
 
 
 class UserAccountCreateSerializer(serializers.ModelSerializer):
@@ -55,12 +47,8 @@ class UserAccountListSerializer(serializers.ModelSerializer):
 
 class TokenObtainSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
-        data = super().validate(attrs)
-        refresh = self.get_token(self.user)
-
-        # Add tokens
-        data["user"] = UserAccountSerializer(self.user).data
-        return data
-
-
-
+        response = {
+            "tokens": super().validate(attrs),
+            "user": UserAccountSerializer(self.user).data,
+        }
+        return response

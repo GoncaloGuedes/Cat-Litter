@@ -8,6 +8,8 @@ import SplashScreen from './src/screens/Splash';
 import SignInScreen from './src/screens/SignIn';
 import HomeScreen from './src/screens/Home';
 
+import useAuthStore from './src/core/global';
+
 const LightTheme = {
   ...DefaultTheme,
   colors: {
@@ -20,7 +22,8 @@ const Stack = createNativeStackNavigator();
 
 function App() {
   const [initialized, setInitialized] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+
+  const isAuthenticated = useAuthStore(state => state.authenticated);
 
   return (
     <NavigationContainer theme={LightTheme}>
