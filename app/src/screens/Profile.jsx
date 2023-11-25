@@ -4,6 +4,7 @@ import Button from '../components/Button';
 import useAuthStore from '../core/global';
 
 function ProfileScreen() {
+  const user = useAuthStore(state => state.user);
   const logout = useAuthStore(state => state.logout);
   return (
     <View style={styles.container}>
@@ -11,7 +12,9 @@ function ProfileScreen() {
         source={require('../assets/profile.png')}
         style={styles.profileImage}
       />
-      <Text style={styles.name}>Gonçalo Guedes</Text>
+      <Text style={styles.name}>
+        {user.first_name} {user.last_name}
+      </Text>
       <View style={styles.buttonContainer}>
         <Button title="Logout" onPress={logout} />
       </View>

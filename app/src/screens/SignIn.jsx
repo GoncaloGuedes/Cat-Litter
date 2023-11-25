@@ -69,8 +69,12 @@ function SignInScreen({navigation}) {
     })
       .then(response => {
         utils.log(response.data);
+        const credentials = {
+          email,
+          password,
+        };
         setLoading(false);
-        login(response.data);
+        login(credentials, response.data.user);
       })
       .catch(error => {
         if (error.response) {

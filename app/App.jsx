@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
@@ -21,10 +21,13 @@ const LightTheme = {
 const Stack = createNativeStackNavigator();
 
 function App() {
-  const [initialized, setInitialized] = useState(true);
-
+  const initialized = useAuthStore(state => state.initialized);
   const isAuthenticated = useAuthStore(state => state.authenticated);
+  const init = useAuthStore(state => state.init);
 
+  useEffect(() => {
+    init();
+  }, []);
   return (
     <NavigationContainer theme={LightTheme}>
       <Stack.Navigator>
