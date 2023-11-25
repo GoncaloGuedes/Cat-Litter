@@ -1,4 +1,4 @@
-import React, {useLayoutEffect} from 'react';
+import React, {useEffect, useLayoutEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 
@@ -6,24 +6,36 @@ import DashboardScreen from './Dashboard';
 import AddEntryScreen from './AddEntry';
 import ProfileScreen from './Profile';
 import {View, Image, StyleSheet} from 'react-native';
+import useAuthStore from '../core/global';
+import {ADDRESS} from '../core/api';
 
 const Tab = createBottomTabNavigator();
 
 function HomeScreen({navigation}) {
+  const socketConnect = useAuthStore(state => state.socketConnect);
+  const socketDisconnect = useAuthStore(state => state.socketDisconnect);
+  const user = useAuthStore(state => state.user);
+
+  const profileImageSource = user.profile_image
+    ? {uri: `http://${ADDRESS}${user.profile_image}`}
+    : require('../assets/profile.png');
   useLayoutEffect(() => {
     navigation.setOptions({headerShown: false});
   }, []);
 
+  useEffect(() => {
+    socketConnect();
+    return () => {
+      socketDisconnect();
+    };
+  }, []);
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
         // profile image
         headerRight: () => (
           <View style={{marginRight: 15}}>
-            <Image
-              source={require('../assets/profile.png')}
-              style={styles.profileImage}
-            />
+            <Image source={profileImageSource} style={styles.profileImage} />
           </View>
         ),
 

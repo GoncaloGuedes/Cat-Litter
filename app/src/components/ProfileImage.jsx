@@ -1,34 +1,23 @@
 import {View, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {launchImageLibrary} from 'react-native-image-picker';
-import utils from '../core/utils';
+import {ADDRESS} from '../core/api';
 
-export default function ProfileImage() {
+const ProfileImage = ({onPress, user, edit}) => {
+  const thumbnailSource = user.profile_image;
+  const uri = 'http://' + ADDRESS + thumbnailSource;
+  console.log(uri);
   return (
-    <TouchableOpacity
-      onPress={() => {
-        launchImageLibrary(
-          {mediaType: 'photo', includeBase64: true},
-          response => {
-            if (response.didCancel) return;
-            const file = response.assets[0];
-
-            // Upload
-
-          },
-        );
-      }}>
-      <Image
-        style={styles.profileImage}
-        source={require('../assets/profile.png')}
-      />
-      <View style={styles.iconWrapper}>
-        <FontAwesomeIcon icon="pencil" size={20} color="#e0e0e0" />
-      </View>
+    <TouchableOpacity onPress={onPress}>
+      <Image style={styles.profileImage} source={{uri}} />
+      {edit ? (
+        <View style={styles.iconWrapper}>
+          <FontAwesomeIcon icon="pencil" size={20} color="#e0e0e0" />
+        </View>
+      ) : null}
     </TouchableOpacity>
   );
-}
+};
 
 const styles = StyleSheet.create({
   profileImage: {
@@ -51,3 +40,5 @@ const styles = StyleSheet.create({
     borderColor: 'white',
   },
 });
+
+export default ProfileImage;

@@ -3,13 +3,28 @@ import {SafeAreaView, Text, View, StyleSheet, Image} from 'react-native';
 import Button from '../components/Button';
 import ProfileImage from '../components/ProfileImage';
 import useAuthStore from '../core/global';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 function ProfileScreen() {
   const user = useAuthStore(state => state.user);
   const logout = useAuthStore(state => state.logout);
+  const uploadThumbnail = useAuthStore(state => state.uploadThumbnail);
+
+  const handleUploadProfileImage = () => {
+    launchImageLibrary({mediaType: 'photo', includeBase64: true}, response => {
+      if (response.didCancel) return;
+      const file = response.assets[0];
+      uploadThumbnail(file);
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <ProfileImage />
+      <ProfileImage
+        onPress={handleUploadProfileImage}
+        user={user}
+        edit={true}
+      />
       <Text style={styles.name}>
         {user.first_name} {user.last_name}
       </Text>
@@ -32,7 +47,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   buttonContainer: {
-    // I want to cover all the space that is left
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',

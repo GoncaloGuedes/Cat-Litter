@@ -32,7 +32,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     profile_image = models.ImageField(
-        upload_to="profile_images/", blank=True, null=True
+        upload_to="profile_images/", blank=False, null=False, default="profile.png"
     )
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

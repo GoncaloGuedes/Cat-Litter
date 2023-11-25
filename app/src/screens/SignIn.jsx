@@ -74,7 +74,7 @@ function SignInScreen({navigation}) {
           password,
         };
         setLoading(false);
-        login(credentials, response.data.user);
+        login(credentials, response.data.user, response.data.tokens);
       })
       .catch(error => {
         if (error.response) {
