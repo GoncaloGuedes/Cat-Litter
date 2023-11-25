@@ -1,6 +1,7 @@
 import React from 'react';
 import {SafeAreaView, Text, View, StyleSheet, Image} from 'react-native';
 import Button from '../components/Button';
+import ProfileImage from '../components/ProfileImage';
 import useAuthStore from '../core/global';
 
 function ProfileScreen() {
@@ -8,10 +9,7 @@ function ProfileScreen() {
   const logout = useAuthStore(state => state.logout);
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../assets/profile.png')}
-        style={styles.profileImage}
-      />
+      <ProfileImage />
       <Text style={styles.name}>
         {user.first_name} {user.last_name}
       </Text>
@@ -27,12 +25,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingTop: 100,
-  },
-  profileImage: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: '#e0e0e0',
   },
   name: {
     fontSize: 24,
