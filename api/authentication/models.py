@@ -27,6 +27,10 @@ class UserManager(BaseUserManager):
         return self.create_user(email, first_name, last_name, password, **extra_fields)
 
 
+from django.core.files.storage import default_storage
+from django.db import models
+
+
 class UserAccount(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
@@ -44,3 +48,15 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    def save(self, *args, **kwargs):
+        # Check if there's an existing profile image
+        try:
+            existing_user = UserAccount.objects.get(pk=self.pk)
+            if existing_user.profile_image.name != self.profile_image.name:
+                # Delete the legacy profile image
+                default_storage.delete(existing_user.profile_image.name)
+        except UserAccount.DoesNotExist:
+            pass
+
+        super().save(*args, **kwargs)
