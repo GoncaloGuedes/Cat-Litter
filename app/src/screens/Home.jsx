@@ -12,8 +12,10 @@ import {ADDRESS} from '../core/api';
 const Tab = createBottomTabNavigator();
 
 function HomeScreen({navigation}) {
-  const socketConnect = useAuthStore(state => state.socketConnect);
-  const socketDisconnect = useAuthStore(state => state.socketDisconnect);
+  const socketConnect = useAuthStore(state => state.socketActions.connect);
+  const socketDisconnect = useAuthStore(
+    state => state.socketActions.disconnect,
+  );
   const user = useAuthStore(state => state.user);
 
   const profileImageSource = user.profile_image

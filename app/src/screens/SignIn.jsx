@@ -22,7 +22,7 @@ import useAuthStore from '../core/global';
 
 function SignInScreen({navigation}) {
   // Get global state
-  const login = useAuthStore(state => state.login);
+  const login = useAuthStore(state => state.actions.login);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

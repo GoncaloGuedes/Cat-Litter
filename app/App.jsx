@@ -23,7 +23,7 @@ const Stack = createNativeStackNavigator();
 function App() {
   const initialized = useAuthStore(state => state.initialized);
   const isAuthenticated = useAuthStore(state => state.authenticated);
-  const init = useAuthStore(state => state.init);
+  const init = useAuthStore(state => state.actions.init);
 
   useEffect(() => {
     init();

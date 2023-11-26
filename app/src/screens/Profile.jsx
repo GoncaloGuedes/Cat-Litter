@@ -7,8 +7,8 @@ import {launchImageLibrary} from 'react-native-image-picker';
 
 function ProfileScreen() {
   const user = useAuthStore(state => state.user);
-  const logout = useAuthStore(state => state.logout);
-  const uploadThumbnail = useAuthStore(state => state.uploadThumbnail);
+  const logout = useAuthStore(state => state.actions.logout);
+  const uploadThumbnail = useAuthStore(state => state.socketActions.uploadThumbnail);
 
   const handleUploadProfileImage = () => {
     launchImageLibrary({mediaType: 'photo', includeBase64: true}, response => {
