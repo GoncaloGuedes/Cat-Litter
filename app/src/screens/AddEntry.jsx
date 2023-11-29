@@ -1,11 +1,13 @@
 import React, {useState} from 'react';
-import {View, Text, Alert, StyleSheet} from 'react-native';
+import {View, Text, Alert, StyleSheet, Platform} from 'react-native';
 import FaceID from 'react-native-touch-id';
 import {launchCamera} from 'react-native-image-picker';
 import Button from '../components/Button';
 import api from '../core/api';
 
 function AddEntryScreen({navigation}) {
+  const [capturedImageURI, setCapturedImageURI] = useState('');
+
   const handleBiometric = async () => {
     try {
       await FaceID.authenticate(
@@ -32,26 +34,30 @@ function AddEntryScreen({navigation}) {
 
     if (authenticationResult) {
       // Launch camera
-      launchCamera({mediaType: 'photo'}, response => {
-        if (response.didCancel) return;
-        const file = response.assets[0];
-        console.log(file);
-        const formData = new FormData();
-        formData.append('file', {
-          image: file.uri,
-          name: file.fileName,
-          type: file.type,
-        });
-        api
-          .post('sandbox/', formData)
-          .then(response => {
-            console.log(response);
-          })
-          .catch(error => {
-            console.log(error);
+      launchCamera(
+        {mediaType: 'photo', includeBase64: false}, // Do not include base64
+        async response => {
+          if (response.didCancel) return;
+
+          const file = response.assets[0];
+
+          try {
+            const formData = new FormData();
+            formData.append('image', {
+              type: file.type,
+              name: file.fileName || 'image.jpg', // Provide a default name if not available
+              uri:
+                Platform.OS === 'android'
+                  ? file.uri
+                  : file.uri.replace('file://', ''),
+            });
+            api.defaults.headers['Content-Type'] = 'multipart/form-data';
+            const response = await api.post('sandbox/', formData);
+          } catch (error) {
             Alert.alert('Error', 'Something went wrong. Please try again.');
-          });
-      });
+          }
+        },
+      );
     }
   };
 

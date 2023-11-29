@@ -32,7 +32,11 @@ class SandboxPostView(APIView):
             ]
         )
 
-        class_idx = json.load(open("sandbox/imagenet_class_index.json"))
+        class_idx = json.load(
+            open(
+                "/Users/goncaloguedes/Documents/PythonProjects/Cat-Litter/api/sandbox/imagenet_class_index.json"
+            )
+        )
         self.class_idx = [class_idx[str(k)][1] for k in range(len(class_idx))]
 
     def __classify(self, image):
@@ -56,16 +60,11 @@ class SandboxPostView(APIView):
             # SandChanges.objects.create(user=request.user)
             prediction = self.__classify(serializer.validated_data["image"])
 
-            if prediction == "brown_bear":
-                return Response(
-                    {"message": f"{prediction}"},
-                    status=status.HTTP_201_CREATED,
-                )
-            else:
-                return Response(
-                    {"message": "Not a bear"},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+            return Response(
+                {"message": f"{prediction}"},
+                status=status.HTTP_201_CREATED,
+            )
+
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
