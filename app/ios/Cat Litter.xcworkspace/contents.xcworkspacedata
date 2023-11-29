@@ -2,12 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/goncaloguedes/Documents/PythonProjects/Cat-Litter/app/ios/app.xcodeproj">
+      location = "group:Cat Litter.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:app.xcodeproj">
    </FileRef>
 </Workspace>

@@ -37,8 +37,6 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>If the user wants to create a new entry, he needs to take a picture of a clean cat litter. This image will not be saved, only used in a ML model to classify if is clean or not.</string>
-	<key>NSFaceIDUsageDescription</key>
-	<string>Authenticate the user when it's adding a new entry to DB</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -61,5 +59,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Enabling Face ID allows you quick access to CatLitterApp</string>
 </dict>
 </plist>
