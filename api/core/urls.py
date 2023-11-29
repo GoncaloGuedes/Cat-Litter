@@ -14,17 +14,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from authentication.views import CustomObtainPairView
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path, include
 from django.contrib.staticfiles.urls import static
-from authentication.views import CustomObtainPairView
+from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("auth/jwt/create/", CustomObtainPairView.as_view(), name="token_create"),
     path("auth/", include("djoser.urls")),
     path("auth/", include("djoser.urls.jwt")),
+    path("sandbox/", include("sandbox.urls")),
 ]
 
 if settings.DEBUG:

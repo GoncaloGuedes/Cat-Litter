@@ -1,9 +1,11 @@
-import json
 import base64
+import json
+
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
+
 from .serializers import UserAccountSerializer
 
 
