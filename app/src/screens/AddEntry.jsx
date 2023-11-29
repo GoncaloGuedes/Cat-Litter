@@ -1,5 +1,12 @@
 import React, {useState} from 'react';
-import {View, Text, Alert, StyleSheet, Platform} from 'react-native';
+import {
+  View,
+  Text,
+  Alert,
+  StyleSheet,
+  Platform,
+  ActivityIndicator,
+} from 'react-native';
 import FaceID from 'react-native-touch-id';
 import {launchCamera} from 'react-native-image-picker';
 import Button from '../components/Button';
@@ -7,11 +14,12 @@ import api from '../core/api';
 
 function AddEntryScreen({navigation}) {
   const [capturedImageURI, setCapturedImageURI] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleBiometric = async () => {
     try {
       await FaceID.authenticate(
-        'To securely add a new entry, use Face ID authentication.',
+        'To securely add a new entry, use FaceID authentication.',
       );
       return true; // Authentication successful
     } catch (error) {
@@ -23,7 +31,7 @@ function AddEntryScreen({navigation}) {
         error.name === 'LAErrorTouchIDNotAvailable' ||
         error.name === 'LAErrorTouchIDNotEnrolled'
       ) {
-        Alert.alert('Face ID not available');
+        Alert.alert('FaceID not available');
       }
       return false; // Authentication failed
     }
@@ -35,8 +43,9 @@ function AddEntryScreen({navigation}) {
     if (authenticationResult) {
       // Launch camera
       launchCamera(
-        {mediaType: 'photo', includeBase64: false}, // Do not include base64
+        {mediaType: 'photo', includeBase64: false},
         async response => {
+          setLoading(true); // Set loading to true during the POST request
           if (response.didCancel) return;
 
           const file = response.assets[0];
@@ -45,7 +54,7 @@ function AddEntryScreen({navigation}) {
             const formData = new FormData();
             formData.append('image', {
               type: file.type,
-              name: file.fileName || 'image.jpg', // Provide a default name if not available
+              name: file.fileName || 'image.jpg',
               uri:
                 Platform.OS === 'android'
                   ? file.uri
@@ -55,6 +64,8 @@ function AddEntryScreen({navigation}) {
             const response = await api.post('sandbox/', formData);
           } catch (error) {
             Alert.alert('Error', 'Something went wrong. Please try again.');
+          } finally {
+            setLoading(false); // Reset loading to false after the POST request
           }
         },
       );
@@ -68,7 +79,10 @@ function AddEntryScreen({navigation}) {
         picture of the clean cat litter afterward.
       </Text>
       <View style={styles.buttonContainer}>
-        <Button title={'Add New Entry'} onPress={handleNewEntry} />
+        <Button
+          title={loading ? <ActivityIndicator size="small" /> : 'Add New Entry'}
+          onPress={handleNewEntry}
+        />
       </View>
     </View>
   );
