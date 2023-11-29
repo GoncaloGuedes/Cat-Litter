@@ -37,7 +37,7 @@ const useAuthStore = create((set, get) => ({
           }));
           return;
         } catch (error) {
-          console.log(error);
+          console.log('GLOBAL INIT ERROR ', error);
         }
       }
       set(state => ({

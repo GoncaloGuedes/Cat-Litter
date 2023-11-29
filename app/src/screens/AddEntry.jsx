@@ -3,6 +3,7 @@ import {View, Text, Alert, StyleSheet} from 'react-native';
 import FaceID from 'react-native-touch-id';
 import {launchCamera} from 'react-native-image-picker';
 import Button from '../components/Button';
+import api from '../core/api';
 
 function AddEntryScreen({navigation}) {
   const handleBiometric = async () => {
@@ -34,7 +35,22 @@ function AddEntryScreen({navigation}) {
       launchCamera({mediaType: 'photo'}, response => {
         if (response.didCancel) return;
         const file = response.assets[0];
-        // Handle the file as needed
+        console.log(file);
+        const formData = new FormData();
+        formData.append('file', {
+          image: file.uri,
+          name: file.fileName,
+          type: file.type,
+        });
+        api
+          .post('sandbox/', formData)
+          .then(response => {
+            console.log(response);
+          })
+          .catch(error => {
+            console.log(error);
+            Alert.alert('Error', 'Something went wrong. Please try again.');
+          });
       });
     }
   };
