@@ -11,10 +11,21 @@ import FaceID from 'react-native-touch-id';
 import {launchCamera} from 'react-native-image-picker';
 import Button from '../components/Button';
 import api from '../core/api';
+import Modal from 'react-native-modal';
 
 function AddEntryScreen({navigation}) {
-  const [capturedImageURI, setCapturedImageURI] = useState('');
   const [loading, setLoading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+
+  const formatPrediction = prediction => {
+    // Split the prediction string by '_' and capitalize each word
+    const words = prediction
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1));
+    // Join the words back together with a space
+    return words.join(' ');
+  };
 
   const handleBiometric = async () => {
     try {
@@ -41,12 +52,14 @@ function AddEntryScreen({navigation}) {
     const authenticationResult = await handleBiometric();
 
     if (authenticationResult) {
-      // Launch camera
       launchCamera(
         {mediaType: 'photo', includeBase64: false},
         async response => {
-          setLoading(true); // Set loading to true during the POST request
-          if (response.didCancel) return;
+          setLoading(true);
+          if (response.didCancel) {
+            setLoading(false);
+            return;
+          }
 
           const file = response.assets[0];
 
@@ -62,14 +75,23 @@ function AddEntryScreen({navigation}) {
             });
             api.defaults.headers['Content-Type'] = 'multipart/form-data';
             const response = await api.post('sandbox/', formData);
+
+            if (response.status === 201) {
+              setModalMessage(response.data.message); // Assuming the message is in the response
+              setModalVisible(true);
+            }
           } catch (error) {
             Alert.alert('Error', 'Something went wrong. Please try again.');
           } finally {
-            setLoading(false); // Reset loading to false after the POST request
+            setLoading(false);
           }
         },
       );
     }
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
   };
 
   return (
@@ -84,6 +106,15 @@ function AddEntryScreen({navigation}) {
           onPress={handleNewEntry}
         />
       </View>
+      <Modal isVisible={modalVisible}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.text}>The image was predicted as:</Text>
+          <Text style={styles.text}>{formatPrediction(modalMessage)}</Text>
+          <View style={styles.buttonContainer}>
+            <Button title="Close" onPress={closeModal} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -104,6 +135,17 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: '100%',
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    padding: 20,
+    margin: 10,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  okButton: {
+    backgroundColor: 'black',
+    width: 100,
   },
 });
 

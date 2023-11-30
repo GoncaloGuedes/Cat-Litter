@@ -27,8 +27,9 @@ const useAuthStore = create((set, get) => ({
           });
           const {user, tokens} = response.data;
 
-          secure.set(user);
+          secure.set('user', user);
           secure.set('tokens', tokens);
+          console.log(tokens);
 
           set(state => ({
             initialized: true,
@@ -49,6 +50,37 @@ const useAuthStore = create((set, get) => ({
       secure.set('credentials', credentials);
       secure.set('tokens', tokens);
       set({authenticated: true, user});
+    },
+
+    refresh: async () => {
+      const tokens = await secure.get('tokens');
+      if (tokens) {
+        try {
+          const response = await api({
+            method: 'POST',
+            url: '/auth/jwt/refresh/',
+            data: {
+              refresh: tokens.refresh,
+            },
+          });
+          const {access} = response.data;
+          tokens.access = access;
+          secure.set('tokens', tokens);
+
+          const user = await secure.get('user');
+          set(state => ({
+            initialized: true,
+            authenticated: true,
+            user,
+          }));
+          return;
+        } catch (error) {
+          console.log('GLOBAL REFRESH ERROR ', error);
+        }
+      }
+      set(state => ({
+        initialized: true,
+      }));
     },
 
     logout: () => {

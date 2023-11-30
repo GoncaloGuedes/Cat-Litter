@@ -19,8 +19,8 @@ class SandboxPostView(APIView):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.model = models.mobilenet_v2(
-            weights=models.MobileNet_V2_Weights.DEFAULT
+        self.model = models.resnext101_64x4d(
+            weights=models.ResNeXt101_64X4D_Weights.DEFAULT
         ).to(self.device)
         self.model.eval()
         self.transform = transforms.Compose(
