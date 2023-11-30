@@ -8,9 +8,11 @@ from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from torchvision import models, transforms
+from django.utils import timezone
 
 from .models import SandChanges
 from .serializers import SandboxGetSerializer, SandboxPostSerializer
+from .paginification import CustomPagination
 
 
 class SandboxPostView(APIView):
@@ -60,6 +62,8 @@ class SandboxPostView(APIView):
             # SandChanges.objects.create(user=request.user)
             prediction = self.__classify(serializer.validated_data["image"])
 
+            SandChanges.objects.create(user=request.user, date=timezone.now())
+
             return Response(
                 {"message": f"{prediction}"},
                 status=status.HTTP_201_CREATED,
@@ -69,6 +73,8 @@ class SandboxPostView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get(self, request, *args, **kwargs):
-        queryset = SandChanges.objects.all()
-        serializer = SandboxGetSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        queryset = SandChanges.objects.select_related("user").order_by("-date")
+        paginator = CustomPagination()
+        result_page = paginator.paginate_queryset(queryset, request)
+        serializer = SandboxGetSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
