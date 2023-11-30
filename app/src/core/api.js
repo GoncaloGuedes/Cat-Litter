@@ -1,7 +1,7 @@
 import axios from 'axios';
 import secure from './secure';
 
-export const ADDRESS = '192.168.55.183:8000'; //'192.168.1.204:8000';
+export const ADDRESS = '192.168.1.6:8000'; //'192.168.1.204:8000';
 
 const api = axios.create({
   baseURL: 'http://' + ADDRESS,
@@ -13,11 +13,17 @@ const api = axios.create({
 // Function to refresh tokens
 const refreshTokens = async () => {
   try {
+    // Check if refresh tokens exist
+    const storedTokens = await secure.get('tokens');
+    if (!storedTokens || !storedTokens.refresh) {
+      throw new Error('No refresh token available');
+    }
+
     // Your logic to refresh tokens
     const response = await axios.post(
       'http://' + ADDRESS + '/auth/jwt/refresh/',
       {
-        refresh: await secure.get('tokens').refresh,
+        refresh: storedTokens.refresh,
       },
     );
 
@@ -40,7 +46,7 @@ api.interceptors.request.use(
     const tokens = await secure.get('tokens');
 
     // Set Authorization header if tokens are available
-    if (tokens) {
+    if (tokens && tokens.access) {
       config.headers.Authorization = `JWT ${tokens.access}`;
     }
 
@@ -63,13 +69,18 @@ api.interceptors.response.use(
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      // Refresh the token and retry the original request
-      const newToken = await refreshTokens();
+      try {
+        // Refresh the token and retry the original request
+        const newToken = await refreshTokens();
 
-      // Update the Authorization header with the new token
-      originalRequest.headers.Authorization = `JWT ${newToken}`;
+        // Update the Authorization header with the new token
+        originalRequest.headers.Authorization = `JWT ${newToken}`;
 
-      return axios(originalRequest);
+        return axios(originalRequest);
+      } catch (refreshError) {
+        // Handle refresh error or re-throw it
+        return Promise.reject(refreshError);
+      }
     }
 
     return Promise.reject(error);
