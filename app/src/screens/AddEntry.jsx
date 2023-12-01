@@ -92,6 +92,7 @@ function AddEntryScreen({navigation}) {
 
   const closeModal = () => {
     setModalVisible(false);
+    navigation.navigate('Dashboard');
   };
 
   return (
