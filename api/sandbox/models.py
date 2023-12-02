@@ -10,8 +10,11 @@ User = get_user_model()
 
 class SandChanges(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ImageField(
+        upload_to="sandbox_images/", null=True, blank=True, default=None
+    )
     date = models.DateTimeField(auto_now_add=True)
-    day_of_week = models.CharField(max_length=10)
+    day_of_week = models.CharField(max_length=10, null=True, blank=True, default=None)
 
     def save(self, *args, **kwargs):
         self.day_of_week = self.date.strftime("%A")

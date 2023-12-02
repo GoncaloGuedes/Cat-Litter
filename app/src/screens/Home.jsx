@@ -5,6 +5,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import DashboardScreen from './Dashboard';
 import AddEntryScreen from './AddEntry';
 import ProfileScreen from './Profile';
+import DetailsScreen from './Details';
 import {View, Image, StyleSheet} from 'react-native';
 import useAuthStore from '../core/global';
 import {ADDRESS} from '../core/api';

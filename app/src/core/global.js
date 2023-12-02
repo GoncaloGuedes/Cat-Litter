@@ -1,7 +1,6 @@
 import {create} from 'zustand';
 import secure from './secure';
 import api, {ADDRESS} from './api';
-import utils from './utils';
 
 // Authentication store
 const useAuthStore = create((set, get) => ({
@@ -51,7 +50,7 @@ const useAuthStore = create((set, get) => ({
       secure.set('tokens', tokens);
       set({authenticated: true, user});
     },
-    
+
     logout: () => {
       const socket = get().socket;
       if (socket) {
@@ -72,12 +71,12 @@ const useAuthStore = create((set, get) => ({
       );
 
       socket.onopen = () => {
-        utils.log('socket.onopen');
+        console.log('socket.onopen');
       };
 
       socket.onmessage = event => {
         const parsedData = JSON.parse(event.data);
-        utils.log('Received WebSocket message:', parsedData);
+        console.log('Received WebSocket message:', parsedData);
 
         const response = {
           thumbnail: (set, get, data) => {
@@ -90,7 +89,7 @@ const useAuthStore = create((set, get) => ({
 
         const resp = response[parsedData.source];
         if (!resp) {
-          utils.log('socket.onmessage' + parsedData.source + ' not found');
+          log.log('socket.onmessage' + parsedData.source + ' not found');
           return;
         }
 
@@ -98,11 +97,11 @@ const useAuthStore = create((set, get) => ({
       };
 
       socket.onerror = e => {
-        utils.log('socket.onerror', e);
+        console.log('socket.onerror', e);
       };
 
       socket.onclose = () => {
-        utils.log('socket.onclose');
+        console.log('socket.onclose');
         // Call disconnect function when the socket is closed
         set(state => ({socket}));
         get().socketActions.disconnect();
@@ -112,7 +111,7 @@ const useAuthStore = create((set, get) => ({
     },
 
     disconnect: () => {
-      utils.log('SOCKET CLOSED');
+      console.log('SOCKET CLOSED');
       // Set socket to null in the state
       set({socket: null});
     },

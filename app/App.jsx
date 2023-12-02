@@ -7,6 +7,7 @@ import './src/core/fontawesome';
 import SplashScreen from './src/screens/Splash';
 import SignInScreen from './src/screens/SignIn';
 import HomeScreen from './src/screens/Home';
+import DetailsScreen from './src/screens/Details';
 
 import useAuthStore from './src/core/global';
 
@@ -40,6 +41,7 @@ function App() {
         ) : (
           <>
             <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Details" component={DetailsScreen} />
           </>
         )}
       </Stack.Navigator>

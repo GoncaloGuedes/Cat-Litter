@@ -1,41 +1,33 @@
 import React from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import {ADDRESS} from '../core/api';
+import {useNavigation} from '@react-navigation/native';
+import {formatDate, formatTime} from '../core/utils';
 
 const EntryCard = ({message}) => {
+  const navigation = useNavigation();
+
   const profileImageSource = message.profile_image
     ? {uri: `http://${ADDRESS}${message.profile_image}`}
     : require('../assets/profile.png');
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.imageContainer}>
-        <Image source={profileImageSource} style={styles.image} />
-      </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.textName}>{message.user}</Text>
-        <Text style={styles.textDate}>{formatDate(message)}</Text>
-        <Text style={styles.textDate}>{formatTime(message)}</Text>
-      </View>
-    </View>
-  );
-};
-
-const formatDate = message => {
-  const options = {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const onPress = async () => {
+    navigation.navigate('Details', {message}); // Pass the entire message object as a parameter
   };
-  const date = new Date(message.date);
-  return date.toLocaleDateString(undefined, options);
-};
-
-const formatTime = message => {
-  const options = {hour: '2-digit', minute: '2-digit'};
-  const time = new Date(message.date);
-  return time.toLocaleTimeString(undefined, options);
+  return (
+    <TouchableOpacity onPress={onPress}>
+      <View style={styles.container}>
+        <View style={styles.imageContainer}>
+          <Image source={profileImageSource} style={styles.image} />
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.textName}>{message.user}</Text>
+          <Text style={styles.textDate}>{formatDate(message)}</Text>
+          <Text style={styles.textDate}>{formatTime(message)}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
 };
 
 const styles = StyleSheet.create({

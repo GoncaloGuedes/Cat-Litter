@@ -45,6 +45,7 @@ function DashboardScreen() {
     <SafeAreaView>
       <Text style={styles.text}>Last 5 Changes:</Text>
       <FlatList
+        scrollEnabled={false}
         data={changes}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({item}) => <EntryCard message={item} />}

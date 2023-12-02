@@ -1,4 +1,9 @@
-from rest_framework.serializers import ImageField, ModelSerializer, Serializer
+from rest_framework.serializers import (
+    ImageField,
+    ModelSerializer,
+    Serializer,
+    CharField,
+)
 
 from .models import SandChanges
 
@@ -11,3 +16,7 @@ class SandboxGetSerializer(ModelSerializer):
     class Meta:
         model = SandChanges
         exclude = ("id",)
+
+
+class SandImagesSerializer(Serializer):
+    image = CharField()

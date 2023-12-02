@@ -11,7 +11,11 @@ from torchvision import models, transforms
 from django.utils import timezone
 
 from .models import SandChanges
-from .serializers import SandboxGetSerializer, SandboxPostSerializer
+from .serializers import (
+    SandboxGetSerializer,
+    SandboxPostSerializer,
+    SandImagesSerializer,
+)
 from .paginification import CustomPagination
 
 
@@ -62,7 +66,12 @@ class SandboxPostView(APIView):
             # SandChanges.objects.create(user=request.user)
             prediction = self.__classify(serializer.validated_data["image"])
 
-            SandChanges.objects.create(user=request.user, date=timezone.now())
+            # Save image to database
+            image = serializer.validated_data["image"]
+
+            SandChanges.objects.create(
+                user=request.user, date=timezone.now(), image=image
+            )
 
             return Response(
                 {"message": f"{prediction}"},
@@ -78,3 +87,30 @@ class SandboxPostView(APIView):
         result_page = paginator.paginate_queryset(queryset, request)
         serializer = SandboxGetSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
+
+
+# Get SandboxImage
+class SandboxGetView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, id, *args, **kwargs):
+        try:
+            # Retrieve the object from the database
+            queryset = SandChanges.objects.get(id=id)
+            url = queryset.image.url
+
+            # Serialize the queryset
+            serializer = SandImagesSerializer({"image": url})
+
+            # Return the serialized data as JSON response
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except SandChanges.DoesNotExist:
+            return Response(
+                {"error": "Object not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        except Exception as e:
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
