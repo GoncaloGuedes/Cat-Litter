@@ -22,36 +22,37 @@ class SandChanges(models.Model):
 def send_changes_on_save(sender, instance, **kwargs):
     channel_layer = get_channel_layer()
 
-    # Get the latest 5 records
-    last_five = (
-        SandChanges.objects.all()
-        .order_by("-date")[:5]
-        .values(
-            "id",
-            "date",
-            "day_of_week",
-            "user__first_name",
-            "user__last_name",
-            "user__profile_image__url",
-        )
-    )
-
-    # Format the data for each record
-    records = [
-        {
-            "date": record["date"].strftime("%Y-%m-%d %H:%M:%S"),
-            "day_of_week": record["day_of_week"],
-            "user": f"{record['user__first_name']} {record['user__last_name']}",
-            "profile_image": record["user__profile_image__url"],
+    changes = SandChanges.objects.all().order_by("-date")[:5]
+    result = []
+    message = []
+    for change in changes:
+        user_data = {
+            "id": change.id,
+            "date": change.date,
+            "day_of_week": change.day_of_week,
+            "user__first_name": change.user.first_name,
+            "user__last_name": change.user.last_name,
+            "user__profile_image__url": change.user.profile_image.url
+            if change.user.profile_image
+            else None,
         }
-        for record in last_five
-    ]
+        result.append(user_data)
 
+        message = [
+            {
+                "id": instance["id"],
+                "date": instance["date"].strftime("%Y-%m-%d %H:%M:%S"),
+                "day_of_week": instance["day_of_week"],
+                "user": f"{instance['user__first_name']} {instance['user__last_name']}",
+                "profile_image": instance["user__profile_image__url"],
+            }
+            for instance in result
+        ]
     # Send the message to the group
     async_to_sync(channel_layer.group_send)(
         "sand_changes_group",
         {
             "type": "send_changes",
-            "message": records,
+            "message": message,
         },
     )

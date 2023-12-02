@@ -22,18 +22,22 @@ class SandChangesConsumer(AsyncWebsocketConsumer):
 
     @database_sync_to_async
     def get_last_five_changes(self):
-        return list(
-            SandChanges.objects.all()
-            .order_by("-date")[:5]
-            .values(
-                "id",
-                "date",
-                "day_of_week",
-                "user__first_name",
-                "user__last_name",
-                "user__profile_image",  # Reference the ImageField directly
-            )
-        )
+        changes = SandChanges.objects.all().order_by("-date")[:5]
+        result = []
+        for change in changes:
+            user_data = {
+                "id": change.id,
+                "date": change.date,
+                "day_of_week": change.day_of_week,
+                "user__first_name": change.user.first_name,
+                "user__last_name": change.user.last_name,
+                "user__profile_image__url": change.user.profile_image.url
+                if change.user.profile_image
+                else None,
+            }
+            result.append(user_data)
+
+        return result
 
     async def send_initial_messages(self):
         last_five = await self.get_last_five_changes()
@@ -44,9 +48,7 @@ class SandChangesConsumer(AsyncWebsocketConsumer):
                 "date": instance["date"].strftime("%Y-%m-%d %H:%M:%S"),
                 "day_of_week": instance["day_of_week"],
                 "user": f"{instance['user__first_name']} {instance['user__last_name']}",
-                "profile_image": self.scope[
-                    "user"
-                ].profile_image.url,  # Construct the URL
+                "profile_image": instance["user__profile_image__url"],
             }
             for instance in last_five
         ]
