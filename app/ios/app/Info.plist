@@ -61,5 +61,7 @@
 	<false/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Enabling Face ID allows you quick access to CatLitterApp</string>
+	<key>RCTBundleURLProvider</key>
+	<string>null</string>
 </dict>
 </plist>
