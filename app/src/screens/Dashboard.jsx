@@ -4,6 +4,8 @@ import React, {useEffect, useState} from 'react';
 import {SafeAreaView, Text, FlatList} from 'react-native';
 import {ADDRESS} from '../core/api';
 import secure from '../core/secure';
+import EntryCard from '../components/EntryCard';
+import utils from '../core/utils';
 
 function DashboardScreen() {
   const [changes, setChanges] = useState([]);
@@ -22,7 +24,6 @@ function DashboardScreen() {
         };
 
         socket.onmessage = event => {
-          console.log('WebSocket Message Received', event.data);
           const data = JSON.parse(event.data);
           setChanges(data.message);
         };
@@ -42,21 +43,15 @@ function DashboardScreen() {
     initializeWebSocket();
   }, []);
 
-  useEffect(() => {
-    console.log('Changes:', changes);
-  }, [changes]);
+  useEffect(() => {}, [changes]);
 
   return (
     <SafeAreaView>
       <Text>Last 5 Changes:</Text>
       <FlatList
-        data={[changes]}
+        data={changes}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({item}) => (
-          <Text>{`Date: ${item.date}, ${
-            item.day_of_week ? `Day of Week: ${item.day_of_week}` : ''
-          }`}</Text>
-        )}
+        renderItem={({item}) => <EntryCard message={item} />}
       />
     </SafeAreaView>
   );
